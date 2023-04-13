@@ -27,7 +27,7 @@ function getDaysForApiRequest(country){
     let hebdomadoryDateList = []; // stock la date du jour, (plus bas nous stockerons les 4 autres dates)
     let requestsList = []; // Le tableau des 5 requetes qu'on effectuera
     for (let i = 0; i < 5; i++) {
-        const previousWeek = new Date().setDate(today.getDate() - (7 * (i + 1)))
+        const previousWeek = new Date().setDate(today.getDate() - (14 * (i + 1)))
         const formatedPreviousWeekYears = new Date(previousWeek).toLocaleDateString("ko-KR",).slice(0, 4);
         const formatedPreviousWeekMonth = new Date(previousWeek).toLocaleDateString("ko-KR",).slice(5, 7).replace(" ",0).replace(".", "");
         var formatedPreviousWeekDay = new Date(previousWeek).toLocaleDateString("ko-KR",).slice(9, 11).replace(".", "") ;
@@ -37,21 +37,21 @@ function getDaysForApiRequest(country){
         hebdomadoryDateList.push(formatedPreviousWeek)
         requestsList.push(axios.get(`http://api.exchangeratesapi.io/v1/${formatedPreviousWeek}?symbols=${country.currencyCode}&access_key=46054ec1e5c85862708fb5cd26c34f79`))
     }
-    return (asyncCall(requestsList,hebdomadoryDateList));
+    return (asyncCall(requestsList,hebdomadoryDateList,country));
 }
 
-async function asyncCall(requestsList,_hebdomadoryDateList) {
+async function asyncCall(requestsList,_hebdomadoryDateList,country) {
     let lastMonthHistoricalRatesResponseList = await Promise.all(requestsList);
     const initialState = {
         "data" : 
             {"base" : lastMonthHistoricalRatesResponseList[0].data.base ,
             "rates" :
                 {
-                    0 :  lastMonthHistoricalRatesResponseList[0].data.rates,
-                    1 :  lastMonthHistoricalRatesResponseList[1].data.rates,
-                    2 :  lastMonthHistoricalRatesResponseList[2].data.rates,
-                    3 :  lastMonthHistoricalRatesResponseList[3].data.rates,
-                    4 :  lastMonthHistoricalRatesResponseList[4].data.rates,
+                    0 :  lastMonthHistoricalRatesResponseList[0].data.rates[country.currencyCode],
+                    1 :  lastMonthHistoricalRatesResponseList[1].data.rates[country.currencyCode],
+                    2 :  lastMonthHistoricalRatesResponseList[2].data.rates[country.currencyCode],
+                    3 :  lastMonthHistoricalRatesResponseList[3].data.rates[country.currencyCode],
+                    4 :  lastMonthHistoricalRatesResponseList[4].data.rates[country.currencyCode],
 
                 },
             "Date" :

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import RateExchangeListIteam from "./rate-exchange-list-item";
+import RateExchangeListIteam from "../components/rate-exchange-list-item";
 
 class RateExchangeList extends Component {
     render() {
